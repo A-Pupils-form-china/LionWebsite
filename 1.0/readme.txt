@@ -1,0 +1,1 @@
+借助cloudreve实现，将文件信息注入cloudreve的数据库
