@@ -18,6 +18,31 @@ class RequestHandler(BaseHTTPRequestHandler):
             temp = path.split('=')
             self.params[temp[0]] = temp[1]
 
+    def check(self):
+        result = "未找到，建议提交"
+        self.cur.execute("SELECT state from file where link=\'%s\'" % self.params['link'])
+        state = self.cur.fetchone()[0]
+        if state == 'downloading':
+            result = '下载中'
+        if state == 'create task':
+            result = '等待中'
+        if state == 'failure':
+            result = '下载失败'
+        if state == 'success':
+            self.cur.execute("SELECT file_name FROM file WHERE link=\'%s\'" % self.params['link'])
+            result = '下载完成,文件名为' + self.cur.fetchone()[0]
+        return "查询结果:" + result
+
+    def create(self):
+        self.cur.execute("SELECT * FROM file WHERE link=\'%s\'" % self.params['link'])
+        if not self.cur.fetchone():
+            self.cur.execute("INSERT INTO file  (link, create_time, state) values (\'%s\', %f, \'%s\')" % (
+                self.params['link'], time.time(), 'create task'))
+            self.con.commit()
+            return "任务创建成功"
+        else:
+            return "任务列表已存在该任务，请尝试查询"
+
     def do_GET(self):
         self.params = {}
         self.con = sqlite3.connect("download.sqlite")
@@ -26,32 +51,18 @@ class RequestHandler(BaseHTTPRequestHandler):
         result = None
         if self.path.__contains__('?'):
             self.get_params()
-            if self.params['command'] == 'check':
-                if self.params['link']:
-                    self.cur.execute("SELECT state from file where link=\'%s\'" % self.params['link'])
-                    state = self.cur.fetchone()[0]
-                    if state == 'downloading':
-                        result = '下载中'
-                    if state == 'create task':
-                        result = '等待中'
-                    if state == 'failure':
-                        result = '下载失败'
-                    if state == 'success':
-                        self.cur.execute("SELECT file_name FROM file WHERE link=\'%s\'" % self.params['link'])
-                        result = '下载完成,文件名为'+self.cur.fetchone()[0]
-                    result = "查询结果:" + result
-            if self.params['command'] == 'create':
-                if self.params['link']:
-                    self.cur.execute("SELECT * FROM file WHERE link=\'%s\'" % self.params['link'])
-                    if not self.cur.fetchone():
-                        self.cur.execute("INSERT INTO file  (link, create_time, state) values (\'%s\', %f, \'%s\')" % (
-                            self.params['link'], time.time(), 'create task'))
-                        self.con.commit()
-                        result = "任务创建成功"
-                    else:
-                        result = "任务列表已存在该任务，请尝试查询"
+            if self.params['link'].__contains__("e-hentai") and len(self.params['link']) > 40 \
+                    and self.params['link'].__contains__("/g/"):
+                if self.params['command'] == 'check':
+                    result = self.check()
+                if self.params['command'] == 'create':
+                    result = self.create()
+            else:
+                result = '链接不合法'
             with open("log.log", 'a') as log:
-                log.write(result+"\n")
+                now = time.localtime(time.time())
+                log.write("%d-%d-%d %d:%d:%d %s\n" % (
+                    now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec, result))
         page = self.create_page(result)
         self.send_content(page)
 
@@ -66,7 +77,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                     <body>
                         <p>{result}</p>
-                    <input type="button" value="back" onclick="document.location='{ip}'">
+                    <input type="button" value="back" onclick="document.location='http://{ip}'">
                     </body>
                     </html>
                     '''.format(**{'result': result, "ip": self.config.ip})
@@ -83,4 +94,3 @@ if __name__ == '__main__':
     serverAddress = ('', 80)
     server = HTTPServer(serverAddress, RequestHandler)
     server.serve_forever()
-

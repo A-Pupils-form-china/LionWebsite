@@ -42,7 +42,9 @@ class process:
         lock = threading.Lock()
         print("downloading " + task)
         with open("log.log", 'a') as log:
-            log.write("downloading " + task + "\n")
+            now = time.localtime(time.time())
+            log.write("%d-%d-%d %d:%d:%d %s\n" % (
+                now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec, "downloading "+task))
         result = self.downloader.create_task(task)
         print(result)
         if result:
