@@ -78,7 +78,7 @@ class downloader:  # 单纯将文件下载到本地
         temp = str(temp[5])
         self.file.amount = int(temp[temp.find('>') + 1:temp.find(" pages")])  # 图片数量
         temp = str(soup.find('h1', id='gn'))
-        self.file.name = str(temp[temp.find("gn\">") + 4:temp.find("</")]).replace("/", "").replace("\'", "")  # 本子名称
+        self.modify_name(str(temp[temp.find("gn\">") + 4:temp.find("</")]).replace("/", "").replace("\'", ""))  # 本子名称
         page = 0
         count = self.file.amount
         while True:  # 循环获取页面链接
@@ -92,3 +92,11 @@ class downloader:  # 单纯将文件下载到本地
                 break
             content = self.session.get(self.file.link + "?p=" + str(page), headers=self.headers)
             soup = BeautifulSoup(content.text, 'html.parser')
+
+    def modify_name(self, name):
+        if name.__contains__('&amp;'):
+            name = name.replace('&amp;', 'and')
+        elif name.__contains__('&'):
+            name = name[:name.find('&')] + name[name.find(';')]
+        self.file.name = name.replace('?', '')
+
