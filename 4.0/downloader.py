@@ -88,7 +88,7 @@ class downloader:  # 单纯将文件下载到本地
                 self.file.pageUrl.append(a['href'])
             count -= 40
             page += 1
-            if count < 0:
+            if count <= 0:
                 break
             content = self.session.get(self.file.link + "?p=" + str(page), headers=self.headers)
             soup = BeautifulSoup(content.text, 'html.parser')
