@@ -141,7 +141,7 @@ class downloader:  # 单纯将文件下载到本地
         os.system("mv \'" + self.file.name + '.zip\' ' + self.config.storage_path)
         os.system("rm -rf \'" + self.file.name + '\'')
         os.system("rm -rf \'" + self.file.name + '.zip\'')
-        self.file.isComplete = True
+        self.file.isSuccess = True
         self.file.state = 'success'
 
     def getDownloadBlock(self, amount):  # 分配下载链接

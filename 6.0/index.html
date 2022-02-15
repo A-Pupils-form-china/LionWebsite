@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<body>
+<p>请输入链接</br>目前只支持e站、xvideos</p>
+<input type="text" id="txtUrl" value="">
+<input type="button" value="创建任务" onclick="document.location='http://{ip}/download/?command=create&link='+document.getElementById('txtUrl').value">
+<input type="button" value="查询任务" onclick="document.location='http://{ip}/download/?command=check&link='+document.getElementById('txtUrl').value">
+<input type="button" value="下载站" onclick="document.location='http://{ip}:8080/'">
+</body>
+</html>

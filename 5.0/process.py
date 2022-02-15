@@ -11,7 +11,7 @@ class process:
     def __init__(self):
         self.config = configure()
         self.downloader = downloader(self.config)
-        self.con = sqlite3.connect(self.config.bin_path + "download.sqlite")
+        self.con = sqlite3.connect(self.config.bin_path + "old.sqlite")
         self.cur = self.con.cursor()
         self.list = []
 
@@ -32,9 +32,9 @@ class process:
             time.sleep(5)
             if self.list:
                 for file in self.list:
-                    if file.isComplete:
+                    if file.isSuccess:
                         self.cur.execute("UPDATE file SET file_name=\'%s\', state=\'%s\', complete_second=%d, pages=%d "
-                                         "WHERE link=\'%s\'" % (file.name, file.state, file.completeSeconds, file.pages
+                                         "WHERE link=\'%s\'" % (file.name, file.state, file.consumeSeconds, file.pages
                                                                 , file.link))
                     else:
                         self.cur.execute("UPDATE file SET state=\'%s\' WHERE link=\'%s\'" % (file.state, file.link))
@@ -50,13 +50,13 @@ class process:
         log.write("%d-%d-%d %d:%d:%d %s\n" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min,
                                               now.tm_sec, "downloading " + task))
         file = self.downloader.create_task(task)
-        print(file.isComplete)
+        print(file.isSuccess)
         complete_time = math.ceil(time.time() - start)
         now = time.localtime(time.time())
         log.write("%d-%d-%d %d:%d:%d %s\n" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec
                                               , "download " + file.name + "  complete, used " + str(
                                                 complete_time) + " seconds"))
-        file.completeSeconds = complete_time
+        file.consumeSeconds = complete_time
         lock.acquire()
         self.list.append(file)
         lock.release()

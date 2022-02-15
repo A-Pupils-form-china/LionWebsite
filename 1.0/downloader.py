@@ -25,7 +25,7 @@ class Downloader:
         self.data = ""
         self.cloudreve_path = "/var/cloudreve/"
         self.task = ['a', 'b']
-        self.con_file = sqlite3.connect("/home/1.0/download.sqlite")
+        self.con_file = sqlite3.connect("/home/1.0/old.sqlite")
         self.cur_file = self.con_file.cursor()
         self.file = {}
 

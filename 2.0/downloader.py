@@ -21,7 +21,7 @@ class Downloader:
             'Upgrade-Insecure-Requests': '1'}
         self.login = requests.Session()
         self.data = ""
-        self.con_file = sqlite3.connect("/home/2.0/download.sqlite")
+        self.con_file = sqlite3.connect("/home/2.0/old.sqlite")
         self.cur_file = self.con_file.cursor()
         self.file = {}
 

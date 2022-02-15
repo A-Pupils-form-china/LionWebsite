@@ -9,7 +9,7 @@ class process:
     def __init__(self):
         self.config = configure()
         self.downloader = downloader(self.config)
-        self.con = sqlite3.connect(self.config.bin_path + "download.sqlite")
+        self.con = sqlite3.connect(self.config.bin_path + "old.sqlite")
         self.cur = self.con.cursor()
         self.task_list = []
         self.success_list = []

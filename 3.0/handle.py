@@ -7,7 +7,7 @@ config = configure()
 if link.__contains__('e-hentai') and link.__contains__('http'):
     link = link[link.find('http'):]
     print(link)
-    con = sqlite3.connect(config.bin_path+"download.sqlite")
+    con = sqlite3.connect(config.bin_path+"old.sqlite")
     cur = con.cursor()
     cur.execute("SELECT * FROM file WHERE link=\'%s\'" % link)
     temp = cur.fetchone()

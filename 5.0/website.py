@@ -33,7 +33,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         if state == 'failure':
             result = '下载失败'
         if state == 'success':
-            self.cur.execute("SELECT file_name, pages, complete_second FROM file WHERE link=\'%s\'" % self.params['link'])
+            self.cur.execute(
+                "SELECT file_name, pages, complete_second FROM file WHERE link=\'%s\'" % self.params['link'])
             check_result = self.cur.fetchone()
             result = '下载完成,文件名为: ' + check_result[0] + ' 页数： ' + str(check_result[1]) + \
                      '  下载用时： ' + str(check_result[2]) + '秒'

@@ -5,7 +5,7 @@ import sys
 link = sys.argv[1][1:]
 print(link)
 if link.__contains__('e-hentai'):
-    con = sqlite3.connect("/home/2.0/download.sqlite")
+    con = sqlite3.connect("/home/2.0/old.sqlite")
     cur = con.cursor()
     cur.execute("SELECT * FROM file WHERE link=\'%s\'" % link)
     temp = cur.fetchone()
